@@ -125,8 +125,8 @@ Source temperature unit.
 <summary>Fields</summary>
 
 Items:
-* Celcius (default)
-* Fahrenheit
+* `Celcius` (default)
+* `Fahrenheit`
 
 </details>
 
@@ -137,8 +137,8 @@ Source concentration unit.
 <summary>Fields</summary>
 
 Items:
-* PPM
-* PPB
+* `PPM`
+* `PPB`
 
 </details>
 
@@ -150,7 +150,7 @@ Reponse status.
 <summary>Fields</summary>
 
 Items:
-* OK
-* Error
+* `OK`
+* `Error`
 
 </details>
