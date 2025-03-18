@@ -22,7 +22,7 @@ TODO
 ## Making Requests
 Include the header:
 
-```
+```cpp
 #include <Breezoduino.h>
 ```
 
@@ -52,7 +52,7 @@ void setup() {
 ```
 
 Send it:
-```
+```cpp
 const result = client.send(new_request);
 
 if (result.status == ResponseStatus.OK) {
