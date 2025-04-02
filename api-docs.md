@@ -58,12 +58,12 @@ Methods:
 
 Add a new data entry of type temperature.
 
-_Note: all temperatures are stored as celcius **internally**._
+_Note: all temperatures are stored as celsius **internally**._
 
 Params:
 * `const char*` id: Identifier of the entry.
 * `float` value: Value of entry.
-* [TempUnit](#enum-tempunit) unit: unit of temperature (`TempUnit.Celcius` or `TempUnit.Fahrenheit`). **Defaults to `TempUnit.Celcius`**.
+* [TempUnit](#enum-tempunit) unit: unit of temperature (`TempUnit.Celsius` or `TempUnit.Fahrenheit`). **Defaults to `TempUnit.Celsius`**.
 
 Returns: (none)
 
@@ -125,7 +125,7 @@ Source temperature unit.
 <summary>Fields</summary>
 
 Items:
-* `Celcius` (default)
+* `Celsius` (default)
 * `Fahrenheit`
 
 </details>
@@ -144,7 +144,7 @@ Items:
 
 ## Struct `ResponseStatus`
 
-Reponse status.
+Response status.
 
 <details>
 <summary>Fields</summary>
