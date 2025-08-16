@@ -22,137 +22,83 @@
 
 #pragma once
 
-#include <ESP8266HTTPClient.h>
+#include <Arduino.h>
+#include <map>
+#include <ESP8266HTTPClient.h> // or <HTTPClient.h> for ESP32
 
 namespace breezo
 {
-  /**
-   * Main class for Breezo. This class is used to send data to the specified backend server.
-   * @param address The address of the backend server, for example "breezo.host.org".
-   * @param server_cfg The configuration of the server.
-   * @return The status of the request.
-   */
-  class Breezo
-  {
-  private:
-    const char *address;
-    const ServerHostCfg server_cfg;
 
-  public:
-    Breezo(const char *address, const ServerHostCfg server_cfg) : address(address), server_cfg(server_cfg) {};
-    ResultStatus send(Reading readings[], size_t len);
-  };
-
-  /**
-   * Configuration for the server host. For further information on the
-   * parameters, refer to the given example code available from the source code
-   * of this project.
-   * @param http_client The HTTP client to use.
-   * @param host The host of the server.
-   * @param port The port of the server. Defaults to 443.
-   * @param fingerprint The fingerprint of the server's certificate.
-   * @param pubkey The public key of the server.
-   * @param cert The certificate of the server.
-   */
   struct ServerHostCfg
   {
-  private:
-    const HTTPClient *http_client;
     const char *host;
-    int16_t port = 443;
-    const char *fingerprint;
-    const char *pubkey;
-    const char *cert;
+    const char *fingerprint = nullptr; // optional, for HTTPS verification
 
-  public:
-    ServerHostCfg(const HTTPClient *http_client, const char *host, int16_t port = 443, const char *fingerprint = nullptr, const char *pubkey = nullptr, const char *cert = nullptr)
-        : http_client(http_client), host(host), port(port), fingerprint(fingerprint), pubkey(pubkey), cert(cert) {}
+    ServerHostCfg(const char *host, const char *fingerprint = nullptr)
+        : host(host), fingerprint(fingerprint) {}
   };
 
-  /**
-   * The status of the request.
-   */
   enum ResultStatus
   {
     OK,
     ERROR
   };
 
-  /**
-   * The temperature unit of the reading.
-   */
   enum TempUnit
   {
     CELSIUS,
     FAHRENHEIT
   };
 
-  /**
-   * The concentration unit of the reading.
-   */
   enum ConcentrationUnit
   {
     PPM,
     PPB
   };
 
-  /**
-   * The data type of the reading.
-   */
-  enum DataType
-  {
-    TEMPERATURE,
-    CONCENTRATION,
-    RATIO,
-  };
-
-  /**
-   * The reading of the sensor.
-   */
-  struct Reading
+  class BreezoRequest
   {
   private:
-    char *key;
-    char *value;
-    DataType datatype;
+    std::map<String, float> readings;
 
   public:
-    Reading(char *key, char *value, DataType datatype) : key(key), value(value), datatype(datatype) {}
+    float lat = 0;
+    float lng = 0;
+    float alt = 0;
+
+    BreezoRequest() {}
+
+    void setLocation(float latitude, float longitude, float altitude);
+
+    void addTemp(const char *id, float value, TempUnit unit = CELSIUS);
+    void addConcentration(const char *id, float value, ConcentrationUnit unit = PPM);
+    void addRatio(const char *id, float value);
+
+    const std::map<String, float> &getReadings() const;
   };
 
-  /**
-   * The response of the request.
-   */
-  struct Response
+  struct BreezoResponse
   {
-    const ResultStatus status;
-    const char *id;
+    ResultStatus status;
+    String id;
+    String message;
+    String air_quality;
 
-    Response(ResultStatus status, const char *id) : status(status), id(id) {}
+    BreezoResponse(ResultStatus s = ERROR, const String &i = "", const String &m = "");
   };
 
-  /**
-   * Get a new temperature Breezo reading.
-   * @param value The value of the reading.
-   * @param unit The unit of the reading.
-   * @return The new reading.
-   */
-  Reading newReadingTemp(float value, TempUnit unit);
+  class Breezo
+  {
+  private:
+    const char *access_token;
+    const char *client_id;
+    const char *client_name;
+    const ServerHostCfg server_cfg;
 
-  /**
-   * Get a new concentration Breezo reading.
-   * @param value The value of the reading.
-   * @param unit The unit of the reading.
-   * @return The new reading.
-   */
+  public:
+    Breezo(const char *token, const char *client_id, const char *client_name, const ServerHostCfg cfg);
 
-  Reading newReadingConcentration(float value, ConcentrationUnit unit);
-
-  /**
-   * Get a new ratio Breezo reading. Accepts a ratio of range 0 to 1. Wraps to 0
-   * if the value is less than 0 and to 1 if the value is greater than 1.
-   * @param value The value of the reading.
-   * @return The new reading.
-   */
-  Reading newReadingRatio(float value);
-}
+    BreezoRequest newRequest();
+    BreezoResponse send(BreezoRequest request);
+  };
+} // namespace breezo
